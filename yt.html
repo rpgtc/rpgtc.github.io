@@ -30,6 +30,14 @@
   if (!videoId) {
     document.body.innerHTML = '<p style="color:white; text-align:center; margin-top:20%;">No video ID provided.</p>';
   } else {
+    fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
+      .then(res => res.json())
+      .then(data => {
+        document.title = data.title;
+      })
+      .catch(() => {
+        document.title = "YT Video";
+      });
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
@@ -39,4 +47,5 @@
   }
 </script>
 </body>
+
 </html>
