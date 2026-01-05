@@ -26,20 +26,29 @@
 <script>
   const params = new URLSearchParams(window.location.search);
   const videoId = params.get('id');
+  const playlistId = params.get('list');
 
-  if (!videoId) {
-    document.body.innerHTML = '<p style="color:white; text-align:center; margin-top:20%;">No video ID provided.</p>';
+  if (!videoId && !playlistId) {
+    document.body.innerHTML = '<p style="color:white; text-align:center; margin-top:20%;">No video or playlist ID provided.</p>';
   } else {
-    fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
-      .then(res => res.json())
-      .then(data => {
-        document.title = data.title;
-      })
-      .catch(() => {
-        document.title = "YT Video";
-      });
     const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+
+    if (playlistId) {
+      fetch(`https://www.youtube-nocookie.com/oembed?url=playlist?list=${playlistId}&format=json`)
+        .then(res => res.json())
+        .then(data => { document.title = data.title; })
+        .catch(() => { document.title = "YT Playlist"; });
+
+      iframe.src = `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}`;
+    } else {
+      fetch(`https://www.youtube-nocookie.com/oembed?url=/watch?v=${videoId}&format=json`)
+        .then(res => res.json())
+        .then(data => { document.title = data.title; })
+        .catch(() => { document.title = "YT Video"; });
+
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+    }
+
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     iframe.allowFullscreen = true;
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
@@ -47,5 +56,4 @@
   }
 </script>
 </body>
-
 </html>
